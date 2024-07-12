@@ -6,45 +6,44 @@ use App\Domain\QiblaDirection\Repository\QiblaDirectionRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: QiblaDirectionRepository::class)]
+#[ORM\Table(name: 'qibla_directions')]
 class QiblaDirection
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
+    #[ORM\Column(type: 'integer')]
+    private int $id;
 
-    #[ORM\Column(length: 255)]
-    private ?string $location = null;
+    #[ORM\Column(type: 'string', length: 255)]
+    private string $location;
 
-    #[ORM\Column]
-    private ?float $direction = null;
+    #[ORM\Column(type: 'float')]
+    private float $direction;
 
-    public function getId(): ?int
+    public function __construct(string $location, float $direction)
     {
-        return $this->id;
+        $this->location = $location;
+        $this->direction = $direction;
     }
 
-    public function getLocation(): ?string
+    public function getLocation(): string
     {
         return $this->location;
     }
 
-    public function setLocation(string $location): static
+    public function setLocation(string $location): void
     {
         $this->location = $location;
-
-        return $this;
     }
 
-    public function getDirection(): ?float
+    public function getDirection(): float
     {
         return $this->direction;
     }
 
-    public function setDirection(float $direction): static
+    public function setDirection(float $direction): void
     {
         $this->direction = $direction;
-
-        return $this;
     }
+
 }

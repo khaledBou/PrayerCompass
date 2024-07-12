@@ -6,9 +6,6 @@ use App\Domain\PrayerTime\Entity\PrayerTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
-/**
- * @extends ServiceEntityRepository<PrayerTime>
- */
 class PrayerTimeRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
