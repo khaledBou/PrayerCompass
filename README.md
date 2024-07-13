@@ -85,47 +85,101 @@ src/
 ├── Domain/
 │   ├── PrayerTime/
 │   │   ├── Entity/
+│   │   │   └── PrayerTime.php           # Entité PrayerTime
 │   │   ├── Repository/
+│   │   │   └── PrayerTimeRepository.php # Interface Repository pour PrayerTime
 │   │   ├── Service/
-│   │   ├── ValueObject/
+│   │   │   └── PrayerTimeService.php    # Service pour la logique métier de PrayerTime
+│   │   └── ValueObject/                 # Objets de valeur spécifiques à PrayerTime
 │   ├── QiblaDirection/
-│   │   ├── Entity/
+│   │   ├── Entity/                      # Entité et objets de valeur pour QiblaDirection
 │   │   ├── Repository/
 │   │   ├── Service/
-│   │   ├── ValueObject/
+│   │   └── ValueObject/
 │   └── User/
 │       ├── Entity/
+│       │   └── User.php                 # Entité User
 │       ├── Repository/
+│       │   └── UserRepository.php       # Interface Repository pour User
 │       ├── Service/
-│       ├── ValueObject/
+│       │   └── UserService.php          # Service pour la logique métier de User
+│       └── ValueObject/                 # Objets de valeur spécifiques à User
 ├── Infrastructure/
-│   ├── Persistence/
-│   │   ├── Doctrine/
-│   │   │   ├── PrayerTime/
-│   │   │   ├── QiblaDirection/
-│   │   │   ├── User/
 │   ├── API/
-│   │   ├── Controller/
-│   │   ├── DTO/
-│   ├── Security/
-│       ├── JWT/
+│   │   └── Controller/
+│   │       ├── PrayerTimeController.php # Contrôleur pour les endpoints de PrayerTime
+│   │       ├── QiblaDirectionController.php # Contrôleur pour les endpoints de QiblaDirection
+│   │       └── UserController.php      # Contrôleur pour les endpoints de User
+│   ├── Persistence/
+│   │   └── Doctrine/
+│   │       ├── PrayerTime/              # Implémentation Doctrine pour PrayerTime
+│   │       ├── QiblaDirection/          # Implémentation Doctrine pour QiblaDirection
+│   │       └── User/                    # Implémentation Doctrine pour User
+│   └── Security/
+│       └── JWT/
 ├── Application/
-│   ├── PrayerTime/
-│   ├── QiblaDirection/
-│   ├── User/
-config/
-migrations/
-tests/
-public/
+│   ├── PrayerTime/                      # Services d'application pour PrayerTime
+│   ├── QiblaDirection/                  # Services d'application pour QiblaDirection
+│   └── User/                            # Services d'application pour User
+├── config/                              # Fichiers de configuration Symfony
+├── migrations/                          # Fichiers de migrations Doctrine
+├── tests/                               # Tests unitaires et fonctionnels
+└── public/   
 ````
 
-## Explication de la Structure
+## Génération des Tables à partir des Entités
 
-- Domain/ : Contient les concepts du domaine avec leurs entités, repositories, services et value objects. Chaque sous-dossier représente un domaine spécifique comme PrayerTime, QiblaDirection, User.
+```
+php bin/console doctrine:migrations:diff
+php bin/console doctrine:migrations:migrate
+```
 
-- Infrastructure/ :
+## Explication de l'Architecture DDD (Domain-Driven Design) dans le POC
 
-  - Persistence/Doctrine/ : Contient les configurations spécifiques à Doctrine pour chaque entité du domaine.
-  - API/ : Contient les contrôleurs pour exposer les API REST (Controller/) et les objets de transfert de données (DTO/) utilisés pour la sérialisation des données.
+- L'architecture Domain-Driven Design (DDD) est une approche de conception de logiciels qui se concentre sur la modélisation du domaine métier de l'application et sa logique. Voici une explication de l'architecture DDD mise en œuvre dans ce POC, ainsi que les raisons pour lesquelles elle a été choisie et les avantages qu'elle offre.
+
+
+
+
+- Domain
+    - Entity : Les entités représentent les objets métiers avec leurs propriétés et comportements. Par exemple, PrayerTime contient les informations et méthodes liées aux heures de prière.
+    - Repository : Les répertoires sont responsables de la persistance des entités. Ils contiennent des méthodes pour sauvegarder, récupérer et manipuler les entités dans la base de données. Par exemple, PrayerTimeRepository gère la persistance des objets PrayerTime.
+
+- Application
+    - Service : Les services d'application contiennent la logique métier qui ne rentre pas dans les entités. Par exemple, QiblaDirectionService contient la logique pour calculer la direction de la Qibla.
+
+- Infrastructure
+  - API : Les contrôleurs d'API gèrent les requêtes HTTP et utilisent les services d'application pour traiter ces requêtes. Par exemple, PrayerTimeController et QiblaDirectionController gèrent respectivement les requêtes liées aux heures de prière et à la direction de la Qibla.
+  - Shared
+     - Ce dossier peut contenir des composants partagés entre différents modules, comme des exceptions personnalisées, des services communs, etc.
+
+
+## Points Positifs de l'Architecture DDD
+
+  - Modularité et Séparation des Préoccupations
+
+    - En séparant clairement les différentes parties de l'application (domaine, application, infrastructure), on obtient un code plus modulaire et maintenable. Chaque module a une responsabilité bien définie.
   
-- Application/ : Ce répertoire peut contenir des services d'application qui orchestrent des opérations complexes impliquant plusieurs entités ou domaines. Par exemple, PrayerTimeService dans Application/PrayerTime/ pourrait gérer des opérations métier complexes liées aux horaires de prière.
+  - Scalabilité
+    - L'architecture DDD permet de gérer facilement la complexité croissante. Chaque partie de l'application peut évoluer indépendamment, facilitant l'ajout de nouvelles fonctionnalités sans perturber le reste du système.
+
+  - Testabilité
+
+    - La séparation des préoccupations facilite l'écriture de tests unitaires et fonctionnels. Par exemple, les services d'application peuvent être testés indépendamment des contrôleurs et des répertoires.
+
+  - Alignement avec le Domaine Métier
+
+    - L'accent mis sur le domaine métier permet de s'assurer que l'application reste alignée avec les besoins et la logique du domaine. Les entités et services reflètent les concepts métier, ce qui facilite la communication avec les experts métier.
+
+  - Flexibilité
+
+     - L'architecture DDD permet de changer facilement les implémentations techniques sans affecter la logique métier. Par exemple, on peut changer la technologie de persistance dans les répertoires sans modifier les entités ou les services d'application.
+
+  - Conclusion
+     - L'architecture DDD offre une base solide et flexible pour le développement d'applications complexes. En utilisant cette architecture dans ce POC, nous préparons le terrain pour une application évolutive et maintenable qui peut s'adapter aux changements et à la croissance future. Le choix des dossiers et la séparation des préoccupations permettent de maintenir une clarté et une cohérence tout au long du développement, facilitant la collaboration et la gestion des changements.
+
+
+
+
+
+

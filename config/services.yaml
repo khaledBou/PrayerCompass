@@ -20,3 +20,32 @@ services:
         public: true
         arguments:
             $qiblaDirectionRepository: '@App\Domain\QiblaDirection\Repository\QiblaDirectionRepository'
+
+    App\Domain\User\Repository\UserRepository:
+        arguments:
+            $registry: '@doctrine'
+
+    App\Domain\PrayerTime\Repository\PrayerTimeRepository:
+        arguments:
+            $registry: '@doctrine'
+
+    App\Domain\User\Service\UserService:
+        public: true
+
+    App\Infrastructure\Security\TokenService:
+        public: true
+
+    App\Infrastructure\Security\PasswordEncoder:
+        public: true
+
+    Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface:
+        alias: lexik_jwt_authentication.jwt_manager
+
+    App\Infrastructure\API\Controller\UserController:
+        autowire: true
+
+    App\Infrastructure\API\Controller\PrayerTimeController:
+
+    App\Infrastructure\API\Controller\QiblaDirectionController:
+      arguments:
+        $qiblaDirectionService: '@App\Domain\QiblaDirection\Service\QiblaDirectionService'

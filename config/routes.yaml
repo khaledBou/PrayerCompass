@@ -3,3 +3,24 @@ controllers:
         path: ../src/Infrastructure/API/Controller/
         namespace: App\Controller
     type: attribute
+
+api_prayer_time:
+    resource: '../src/Infrastructure/API/Controller/PrayerTimeController.php'
+    type: attribute
+
+api_qibla_direction:
+    resource: '../src/Infrastructure/API/Controller/QiblaDirectionController.php'
+    type: attribute
+
+api_login_check:
+    path: /api/login_check
+
+api_users_register:
+    path: /api/users/register
+    controller: App\Infrastructure\API\Controller\UserController::registerUser
+    methods: [POST]
+
+api_login:
+    path: /api/login
+    controller: 'App\Infrastructure\API\Controller\AuthController::login'
+    methods: ['POST']

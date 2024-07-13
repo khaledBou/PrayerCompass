@@ -13,6 +13,17 @@ class PrayerTimeRepository extends ServiceEntityRepository
         parent::__construct($registry, PrayerTime::class);
     }
 
+
+    public function save(PrayerTime $prayerTime, bool $flush = true): void
+    {
+        $em = $this->getEntityManager();
+        $em->persist($prayerTime);
+
+        if ($flush) {
+            $em->flush();
+        }
+    }
+
     //    /**
     //     * @return PrayerTime[] Returns an array of PrayerTime objects
     //     */

@@ -2,49 +2,46 @@
 
 namespace App\Infrastructure\API\Controller;
 
-use App\Domain\PrayerTime\Service\PrayerTimeService;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Domain\PrayerTime\Entity\PrayerTime;
+use App\Domain\PrayerTime\Repository\PrayerTimeRepository;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class PrayerTimeController
+#[Route('/api/prayer-time')]
+class PrayerTimeController extends AbstractController
 {
-    private PrayerTimeService $prayerTimeService;
+    private $prayerTimeRepository;
 
-    public function __construct(PrayerTimeService $prayerTimeService)
+    public function __construct(PrayerTimeRepository $prayerTimeRepository)
     {
-        $this->prayerTimeService = $prayerTimeService;
+        $this->prayerTimeRepository = $prayerTimeRepository;
     }
 
-    #[Route('/api/prayer-times/{location}', name: 'get_prayer_times', methods: ['GET'])]
-    public function getPrayerTimes(string $location): JsonResponse
+    #[Route('', name: 'get_prayer_times', methods: ['GET'])]
+    public function getPrayerTimes(): Response
     {
-        $prayerTimes = $this->prayerTimeService->getPrayerTimes($location);
-        if ($prayerTimes === null) {
-            return new JsonResponse(['error' => 'Prayer times not found'], 404);
-        }
-
-        return new JsonResponse($prayerTimes);
+        $prayerTimes = $this->prayerTimeRepository->findAll();
+        return $this->json($prayerTimes);
     }
 
-    #[Route('/api/prayer-times', name: 'save_prayer_times', methods: ['POST'])]
-    public function savePrayerTimes(Request $request): JsonResponse
+    #[Route('', name: 'add_prayer_time', methods: ['POST'])]
+    public function addPrayerTime(Request $request): Response
     {
         $data = json_decode($request->getContent(), true);
 
-        if (!isset($data['location'], $data['fajr'], $data['dhuhr'], $data['asr'], $data['maghrib'], $data['isha'])) {
-            return new JsonResponse(['error' => 'Invalid data'], 400);
-        }
+        $prayerTime = new PrayerTime();
+        $prayerTime->setCity($data['city']);
+        $prayerTime->setCountry($data['country']);
+        $prayerTime->setFajr(new \DateTime($data['fajr']));
+        $prayerTime->setDhuhr(new \DateTime($data['dhuhr']));
+        $prayerTime->setAsr(new \DateTime($data['asr']));
+        $prayerTime->setMaghrib(new \DateTime($data['maghrib']));
+        $prayerTime->setIsha(new \DateTime($data['isha']));
 
-        $prayerTime = $this->prayerTimeService->savePrayerTime(
-            $data['location'],
-            new \DateTime($data['fajr']),
-            new \DateTime($data['dhuhr']),
-            new \DateTime($data['asr']),
-            new \DateTime($data['maghrib']),
-            new \DateTime($data['isha'])
-        );
+        $this->prayerTimeRepository->save($prayerTime, true);
 
-        return new JsonResponse($prayerTime, 201);
+        return $this->json($prayerTime, Response::HTTP_CREATED);
     }
 }
