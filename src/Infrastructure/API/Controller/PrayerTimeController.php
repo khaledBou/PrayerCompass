@@ -26,6 +26,9 @@ class PrayerTimeController extends AbstractController
         return $this->json($prayerTimes);
     }
 
+    /**
+     * @throws \Exception
+     */
     #[Route('', name: 'add_prayer_time', methods: ['POST'])]
     public function addPrayerTime(Request $request): Response
     {
@@ -34,6 +37,7 @@ class PrayerTimeController extends AbstractController
         $prayerTime = new PrayerTime();
         $prayerTime->setCity($data['city']);
         $prayerTime->setCountry($data['country']);
+        
         $prayerTime->setFajr(new \DateTime($data['fajr']));
         $prayerTime->setDhuhr(new \DateTime($data['dhuhr']));
         $prayerTime->setAsr(new \DateTime($data['asr']));
